@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: PersistentVolume
+
+# https://kubernetes.io/docs/tasks/configure-pod-container/configure-persistent-volume-storage/
+metadata:
+  name: two-pods-pv
+spec:
+  # if the storage class is not specified, the default storage class will be used 
+  storageClassName: local-hostpath-storageclass
+  capacity:
+    storage: 5Gi
+  # this is a per-node basis - so works locally
+  accessModes: 
+    - ReadWriteOnce 
+    # since everything's on the same one local node
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /Users/jyee/work/sandbox/rancher-desktop-sandbox/pod_volume_share/pv-shared-data

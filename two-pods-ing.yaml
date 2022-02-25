@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: two-pods-ing
+spec:
+  rules:
+  - host: two-pods.rancher.localhost
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: two-pods-svc
+            port:
+              number: 3080
+  tls:
+  - hosts:
+    - two-pods.rancher.localhost

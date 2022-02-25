@@ -1,0 +1,58 @@
+# https://www.stratoscale.com/blog/kubernetes/kubernetes-how-to-share-disk-storage-between-containers-in-a-pod/
+apiVersion: v1
+kind: Pod
+metadata:
+  name: two-pods
+  labels:
+    app: two-pods
+spec:
+  containers:
+  - name: nginx
+    image: nginx:alpine
+    volumeMounts:
+    - name: shared-data
+      mountPath: /usr/share/nginx/html
+    ports:
+      - containerPort: 80
+    resources:
+      requests:
+        cpu: 100m
+        memory: 100Mi
+      limits:
+        cpu: 100m
+        memory: 100Mi
+
+  - name: debugger
+    image: python:slim-bullseye
+    volumeMounts:
+      - name: shared-data
+        mountPath: /mnt/shared-data
+    command: ["/bin/sh"]
+    args:
+      - -c
+      - >
+        while true; do
+          PYTHON_RANDOM=$(python -c 'import random; print(random.randint(1, 2**32))')
+          BASH_RANDOM=$(bash -c 'echo $RANDOM')
+          DATE=$(date)
+          echo -n $DATE > /mnt/shared-data/index.html
+          echo ", BASH_RANDOM=$BASH_RANDOM,PYTHON_RANDOM=$PYTHON_RANDOM" >> /mnt/shared-data/index.html
+          echo "Aloha from the debugger pod" >> /mnt/shared-data/index.html
+
+          echo -n $DATE >> /mnt/shared-data/hello.html
+          echo -n ",Hello from the debugger pod" >> /mnt/shared-data/hello.html
+          echo ",BASH_RANDOM=$BASH_RANDOM,PYTHON_RANDOM=$PYTHON_RANDOM" >> /mnt/shared-data/hello.html
+          sleep 10
+        done
+    resources:
+      requests:
+        cpu: 100m
+        memory: 100Mi
+      limits:
+        cpu: 100m
+        memory: 100Mi
+    
+  volumes:
+  - name: shared-data
+    persistentVolumeClaim:
+      claimName: two-pods-pvc

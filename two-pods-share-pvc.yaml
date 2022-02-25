@@ -1,0 +1,14 @@
+# https://kubernetes.io/docs/tasks/configure-pod-container/configure-persistent-volume-storage/#create-a-persistentvolumeclaim
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: two-pods-pvc
+spec:
+  # if the storage class is not specified, the default storage class will be used
+  storageClassName: local-hostpath-storageclass
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

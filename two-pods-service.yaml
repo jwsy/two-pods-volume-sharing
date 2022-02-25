@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: two-pods-svc
+spec:
+  selector:
+    app: two-pods
+  ports:
+  - port: 3080
+    targetPort: 80
