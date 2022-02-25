@@ -18,11 +18,11 @@ Config
     >
     > Note that `$HOME` here means `/Users/$USER` on the host. The `$HOME` inside the guest expands to `/home/$USER.linux` (and `$USER` inside the guest might be lima if the host username is not a valid Linux username)
 
-Steps to build this app
------------------------
-1. Create the PersistentVolume (PV). Specifically create a unique `storageClassName` and a valid `spec.hostPath`
-2. Create the PersistentVolumeClaim (PVC) named `two-pods-pvc` so that it looks for the `storageClassName` of the PV created. Note that the `spec.accessModes` are fine as `ReadWriteOnce` since this local Rancher Desktop only has ONE node, but this may have to change on a cluster with more nodes.
-3. Create the pods. I created two containers in the pod, (#1) to serve the data from an nginx web server and (#2) to use as a debugger and a data creator to serve. The key here is that both use the same `spec.containers.volumeMounts.name`, in this example it's `shared-data` and that's a volume that uses the PVC created earlier `two-pods-pvc`
+Steps I took to build this app
+------------------------------
+1. Create the PersistentVolume (PV) `two-pods-share-pv.yaml`. Specifically create a unique `storageClassName` and a valid `spec.hostPath`
+2. Create the PersistentVolumeClaim (PVC) `two-pods-share-pvc` named `two-pods-pvc` so that it looks for the `storageClassName` of the PV created. Note that the `spec.accessModes` are fine as `ReadWriteOnce` since this local Rancher Desktop only has ONE node, but this may have to change on a cluster with more nodes.
+3. Create the pods `two-pods-web-pod.yaml` and `two-pods-debugger-pod.yaml`. I initially created two containers in a single pod, (#1) to serve the data from an nginx web server and (#2) to use as a debugger and a data creator to serve. Then, I separated them into two pods in two separate files. The key here is that both use the same `spec.containers.volumeMounts.name`, in this example it's `shared-data` and that's a volume that uses the PVC created earlier `two-pods-pvc`
 4. Create the service & ingress as in this simplest example https://itnext.io/simplest-minimal-k8s-app-tutorial-with-rancher-desktop-in-5-min-5481edb9a4a5
 
 HOWTO Deploy
