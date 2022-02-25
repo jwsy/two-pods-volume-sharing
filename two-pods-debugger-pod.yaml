@@ -2,26 +2,10 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: two-pods
-  labels:
-    app: two-pods
+  name: two-pods-debugger
+
 spec:
   containers:
-  - name: nginx
-    image: nginx:alpine
-    volumeMounts:
-    - name: shared-data
-      mountPath: /usr/share/nginx/html
-    ports:
-      - containerPort: 80
-    resources:
-      requests:
-        cpu: 100m
-        memory: 100Mi
-      limits:
-        cpu: 100m
-        memory: 100Mi
-
   - name: debugger
     image: python:slim-bullseye
     volumeMounts:
@@ -35,14 +19,14 @@ spec:
           PYTHON_RANDOM=$(python -c 'import random; print(random.randint(1, 2**32))')
           BASH_RANDOM=$(bash -c 'echo $RANDOM')
           DATE=$(date)
-          echo -n $DATE > /mnt/shared-data/index.html
-          echo ", BASH_RANDOM=$BASH_RANDOM,PYTHON_RANDOM=$PYTHON_RANDOM" >> /mnt/shared-data/index.html
+
+          echo "$DATE,BASH_RANDOM=$BASH_RANDOM,PYTHON_RANDOM=$PYTHON_RANDOM" > /mnt/shared-data/index.html
           echo "Aloha from the debugger pod" >> /mnt/shared-data/index.html
 
-          echo -n $DATE >> /mnt/shared-data/hello.html
-          echo -n ",Hello from the debugger pod" >> /mnt/shared-data/hello.html
+          echo -n "$DATE,Hello from the debugger pod" >> /mnt/shared-data/hello.html
           echo ",BASH_RANDOM=$BASH_RANDOM,PYTHON_RANDOM=$PYTHON_RANDOM" >> /mnt/shared-data/hello.html
-          sleep 10
+
+          sleep 3 
         done
     resources:
       requests:

@@ -1,0 +1,28 @@
+# https://www.stratoscale.com/blog/kubernetes/kubernetes-how-to-share-disk-storage-between-containers-in-a-pod/
+apiVersion: v1
+kind: Pod
+metadata:
+  name: two-pods-web
+  labels:
+    app: two-pods
+
+spec:
+  containers:
+  - name: web
+    image: nginx:alpine
+    volumeMounts:
+    - name: shared-data
+      mountPath: /usr/share/nginx/html
+    ports:
+      - containerPort: 80
+    resources:
+      requests:
+        cpu: 100m
+        memory: 100Mi
+      limits:
+        cpu: 100m
+        memory: 100Mi
+  volumes:
+  - name: shared-data
+    persistentVolumeClaim:
+      claimName: two-pods-pvc
